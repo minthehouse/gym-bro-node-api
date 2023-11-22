@@ -1,0 +1,113 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Diet {
+  id         Int       @id @default(autoincrement())
+  user_id    Int
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  taken_at   DateTime?
+  User       User      @relation(fields: [user_id], references: [id])
+  foods      Food[]
+}
+
+model ExerciseType {
+  id              Int         @id @default(autoincrement())
+  name            String
+  created_at      DateTime    @default(now())
+  updated_at      DateTime    @updatedAt
+  muscle_group    MuscleGroup @relation(fields: [muscle_group_id], references: [id])
+  muscle_group_id Int
+  exercises       Exercise[]
+}
+
+model Exercise {
+  id               Int           @id @default(autoincrement())
+  workout_id       Int
+  created_at       DateTime      @default(now())
+  updated_at       DateTime      @updatedAt
+  weight           Float?
+  rep              Int?
+  exercise_type_id Int?
+  ExerciseType     ExerciseType? @relation(fields: [exercise_type_id], references: [id])
+  workout          Workout       @relation(fields: [workout_id], references: [id])
+}
+
+model FoodCategory {
+  id           Int      @id @default(autoincrement())
+  name         String
+  display_name String
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+}
+
+model MealType {
+  id           Int      @id @default(autoincrement())
+  name         String
+  display_name String
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  Food         Food[]
+}
+
+model Food {
+  id             Int      @id @default(autoincrement())
+  name           String
+  calories       Decimal  @default(0)
+  protein        Float    @default(0)
+  carbohydrates  Decimal  @default(0)
+  fat            Float    @default(0)
+  diet_id        Int
+  meal_type_id   Int
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  serving_weight Int      @default(100)
+  diet           Diet     @relation(fields: [diet_id], references: [id])
+  meal_type      MealType @relation(fields: [meal_type_id], references: [id])
+}
+
+model MuscleGroup {
+  id             Int            @id @default(autoincrement())
+  name           String
+  created_at     DateTime       @default(now())
+  updated_at     DateTime       @updatedAt
+  exercise_types ExerciseType[]
+}
+
+model User {
+  id               Int       @id @default(autoincrement())
+  first_name       String
+  last_name        String
+  email            String    @unique
+  password         String
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+  goal             String?
+  gender           String?
+  age              Int?
+  height_in_feet   Int?
+  height_in_inches Int?
+  weight           Int?
+  diets            Diet[]
+  workouts         Workout[]
+}
+
+model Workout {
+  id         Int        @id @default(autoincrement())
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  start_at   DateTime?
+  end_at     DateTime?
+  user_id    Int
+  exercises  Exercise[]
+  user       User       @relation(fields: [user_id], references: [id])
+}
