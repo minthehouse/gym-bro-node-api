@@ -4,6 +4,8 @@ import moragn from "morgan";
 import cors from "cors";
 import { createNewUser, signin } from "./handlers/user";
 import { protect } from "./modules/auth";
+import { body } from "express-validator";
+import { handleInputErrors } from "./modules/middleware";
 
 const app = express();
 
@@ -22,8 +24,29 @@ app.get("/", (req, res, next) => {
 // app.use("/api", protect, router);
 app.use("/api", protect, router);
 
-app.post("/user", createNewUser);
-app.post("/signin", signin);
+const confirmPasswordMatches = (value, { req }) => {
+  console.log("hit hit hit ", value === req.body.password);
+  return value === req.body.password;
+};
+
+app.post(
+  "/user",
+  body("first_name").isString().notEmpty(),
+  body("last_name").isString().notEmpty(),
+  body("email").isEmail(),
+  body("password").isStrongPassword(),
+  body("password_confirmation").custom(confirmPasswordMatches),
+  handleInputErrors,
+  createNewUser
+);
+
+app.post(
+  "/signin",
+  body("email").isEmail(),
+  body("password").isStrongPassword(),
+  handleInputErrors,
+  signin
+);
 
 // error handler needs to be placed at the bottom after all the routes are set.
 // so that they can be caught by the error handlers

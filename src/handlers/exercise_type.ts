@@ -14,3 +14,12 @@ export const createExerciseType = async (req, res, next) => {
     next(e);
   }
 };
+
+export const getExerciseTypes = async (req, res, next) => {
+  try {
+    const exerciseTypes = await prisma.exerciseType.findMany();
+    res.json({ data: exerciseTypes });
+  } catch (e) {
+    next(e);
+  }
+};
