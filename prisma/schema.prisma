@@ -84,21 +84,22 @@ model MuscleGroup {
 }
 
 model User {
-  id               Int       @id @default(autoincrement())
-  first_name       String
-  last_name        String
-  email            String    @unique
-  password         String
-  created_at       DateTime  @default(now())
-  updated_at       DateTime  @updatedAt
-  goal             String?
-  gender           String?
-  age              Int?
-  height_in_feet   Int?
-  height_in_inches Int?
-  weight           Int?
-  diets            Diet[]
-  workouts         Workout[]
+  id                    Int       @id @default(autoincrement())
+  first_name            String
+  last_name             String
+  email                 String    @unique
+  password              String
+  password_confirmation String
+  created_at            DateTime  @default(now())
+  updated_at            DateTime  @updatedAt
+  goal                  String?
+  gender                String?
+  age                   Int?
+  height_in_feet        Int?
+  height_in_inches      Int?
+  weight                Int?
+  diets                 Diet[]
+  workouts              Workout[]
 }
 
 model Workout {

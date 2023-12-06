@@ -9,12 +9,11 @@ export const createNewUser = async (req, res, next) => {
         last_name: req.body.last_name,
         email: req.body.email,
         password: req.body.password,
+        password_confirmation: req.body.password_confirmation,
       },
     });
 
-    console.log("user", user);
     const token = createJWT(user);
-    console.log("token", token);
     res.json({ token });
   } catch (e) {
     e.type = "input"; // this needs to be replaced
