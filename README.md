@@ -47,7 +47,7 @@ The API utilizes the express-validator package for middleware to validate HTTP r
 - **Prisma:** An open-source database toolkit that simplifies database access and migrations.
   
 ### 3. Authentication with JWT Tokens
-- **Express.js:** The API employs JSON Web Tokens (JWT) for user authentication. Upon successful login or registration, the server issues a JWT token that must be included in the headers of subsequent requests for authentication.
+- **JSON Web Tokens (JWT):** The API employs JSON Web Tokens (JWT) for user authentication. Upon successful login or registration, the server issues a JWT token that must be included in the headers of subsequent requests for authentication.
 
 ### 4. Integrated FoodData Central API
 - **U.S. Department of Agriculture:** The API integrates with the FoodData Central API for comprehensive food search functionality and nutritional information retrieval.
