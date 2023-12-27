@@ -52,6 +52,9 @@ The API utilizes the express-validator package for middleware to validate HTTP r
 ### 4. Integrated FoodData Central API
 - **U.S. Department of Agriculture:** The API integrates with the FoodData Central API for comprehensive food search functionality and nutritional information retrieval.
 
+### 5. Render Hosting Platform
+- **Render:** The application is hosted on the Render platform, eliminating the need for manual installations. Render provides seamless deployment and scaling.
+
 ## Testing
 
 For development and testing purposes, the `Thunder Client` VS Code extension is recommended for endpoint testing. This extension simplifies the process of testing API endpoints directly within the VS Code environment.
