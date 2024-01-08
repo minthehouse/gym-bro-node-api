@@ -23,3 +23,19 @@ export const getExerciseTypes = async (req, res, next) => {
     next(e);
   }
 };
+
+export const searchExerciseType = async (req, res, next) => {
+  try {
+    const exerciseTypes = await prisma.exerciseType.findMany({
+      where: {
+        name: {
+          contains: req.query.search_param,
+        },
+      },
+    });
+
+    res.json(exerciseTypes); // send the response back to the client
+  } catch (e) {
+    next(e);
+  }
+};
