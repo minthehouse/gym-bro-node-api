@@ -22,7 +22,6 @@ app.get("/", (req, res, next) => {
 });
 
 // app.use("/api", protect, router);
-app.use("/api", protect, router);
 
 const confirmPasswordMatches = (value, { req }) => {
   console.log("hit hit hit ", value === req.body.password);
@@ -41,12 +40,15 @@ app.post(
 );
 
 app.post(
-  "/signin",
+  "/auth/sign_in",
   body("email").isEmail(),
   body("password").isStrongPassword(),
   handleInputErrors,
   signin
 );
+
+app.use(protect);
+app.use(router);
 
 // error handler needs to be placed at the bottom after all the routes are set.
 // so that they can be caught by the error handlers

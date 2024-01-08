@@ -1,20 +1,24 @@
 import prisma from "../db";
 
 export const getWorkouts = async (req, res) => {
-  const user = await prisma.user.findUnique({
-    where: {
-      id: parseInt(req.params.userId),
-    },
-    include: {
-      workouts: {
-        include: { exercises: true },
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: parseInt(req.params.userId),
       },
-    },
-  });
+      include: {
+        workouts: {
+          include: { exercises: true },
+        },
+      },
+    });
 
-  res.json({
-    data: user.workouts,
-  });
+    const workouts = user?.workouts || [];
+
+    res.json(workouts);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 };
 
 export const getWorkoutById = async (req, res) => {
@@ -36,7 +40,7 @@ export const getWorkoutById = async (req, res) => {
   }
 
   res.json({
-    data: workout,
+    workout,
   });
 };
 
