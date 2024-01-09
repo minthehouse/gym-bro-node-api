@@ -5,6 +5,7 @@ export const createExerciseType = async (req, res, next) => {
     const exerciseType = await prisma.exerciseType.create({
       data: {
         name: req.body.name,
+        display_name: req.body.display_name,
         muscle_group_id: req.body.muscle_group_id,
       },
     });
@@ -29,7 +30,7 @@ export const searchExerciseType = async (req, res, next) => {
     const exerciseTypes = await prisma.exerciseType.findMany({
       where: {
         name: {
-          contains: req.query.search_param,
+          contains: req.query.search_param.toLowerCase(),
         },
       },
     });

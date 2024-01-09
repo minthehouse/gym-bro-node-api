@@ -22,6 +22,7 @@ model Diet {
 
 model ExerciseType {
   id              Int         @id @default(autoincrement())
+  display_name    String
   name            String
   created_at      DateTime    @default(now())
   updated_at      DateTime    @updatedAt
@@ -62,6 +63,7 @@ model MealType {
 model Food {
   id             Int      @id @default(autoincrement())
   name           String
+  display_name   String
   calories       Decimal  @default(0)
   protein        Float    @default(0)
   carbohydrates  Decimal  @default(0)
@@ -78,6 +80,7 @@ model Food {
 model MuscleGroup {
   id             Int            @id @default(autoincrement())
   name           String
+  display_name   String
   created_at     DateTime       @default(now())
   updated_at     DateTime       @updatedAt
   exercise_types ExerciseType[]
