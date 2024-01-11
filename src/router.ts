@@ -11,7 +11,7 @@ import { createFood } from "./handlers/food";
 
 const router = Router();
 
-router.post("/user/:userId/workout", createWorkout);
+router.post("/workout", createWorkout);
 router.get("/users/:userId/workouts", getWorkouts);
 router.get("/workout/:workoutId", getWorkoutById);
 
