@@ -88,6 +88,28 @@ const createExercises = (exerciseAttributes) => {
   return exerciseAttributes.map((exercise) => ({
     weight: parseInt(exercise.weight),
     rep: parseInt(exercise.rep),
-    exercise_type_id: exercise.exercise_type_id,
+    exercise_type_id: parseInt(exercise.exercise_type_id),
   }));
+};
+
+export const updateWorkout = async (req, res, next) => {
+  try {
+    const { workout } = req.body;
+    const { exercises_attributes, user_id, start_at, end_at } = workout;
+
+    let updatedExercises = [];
+
+    const exercises = await prisma.exercise.findMany({
+      where: {
+        workout_id: parseInt(req.params.workoutId),
+        id: {
+          in: exercises_attributes.map((exercise) => parseInt(exercise.id)),
+        },
+      },
+    });
+
+    res.json({ data: [] });
+  } catch (e) {
+    next(e);
+  }
 };
