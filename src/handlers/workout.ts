@@ -37,6 +37,9 @@ export const getWorkoutById = async (req, res) => {
             },
           },
         },
+        orderBy: {
+          id: "asc",
+        },
       },
     },
   });
@@ -78,7 +81,7 @@ export const createWorkout = async (req, res, next) => {
       },
     });
 
-    res.json({ data: newWorkout });
+    res.json({ success: true, data: newWorkout });
   } catch (e) {
     next(e);
   }
@@ -94,21 +97,50 @@ const createExercises = (exerciseAttributes) => {
 
 export const updateWorkout = async (req, res, next) => {
   try {
-    const { workout } = req.body;
-    const { exercises_attributes, user_id, start_at, end_at } = workout;
+    const workoutId = parseInt(req.params.workoutId);
+    const { exercises_attributes } = req.body.workout;
 
-    let updatedExercises = [];
+    // Transform exercises_attributes into the expected structure
+    const exercisesData = exercises_attributes.map((exercise) => ({
+      id: exercise.id || null,
+      weight: parseInt(exercise.weight),
+      rep: parseInt(exercise.rep),
+      exercise_type_id: exercise.exercise_type_id,
+    }));
 
-    const exercises = await prisma.exercise.findMany({
-      where: {
-        workout_id: parseInt(req.params.workoutId),
-        id: {
-          in: exercises_attributes.map((exercise) => parseInt(exercise.id)),
+    // Update exercises for the workout
+    const updatedWorkout = await prisma.workout.update({
+      where: { id: workoutId },
+      data: {
+        exercises: {
+          create: exercisesData
+            .filter((data) => !data.id)
+            .map((data) => ({
+              weight: data.weight,
+              rep: data.rep,
+              exercise_type_id: data.exercise_type_id,
+            })),
+          update: exercisesData
+            .filter((data) => !!data.id)
+            .map((data) => ({
+              where: { id: data.id },
+              data: {
+                weight: data.weight,
+                rep: data.rep,
+              },
+            })),
+        },
+      },
+      include: {
+        exercises: {
+          orderBy: {
+            id: "asc",
+          },
         },
       },
     });
 
-    res.json({ data: [] });
+    res.json({ success: true, data: updatedWorkout });
   } catch (e) {
     next(e);
   }
