@@ -12,7 +12,7 @@ import {
   updateWorkout,
 } from "./handlers/workout";
 import { body } from "express-validator";
-import { createFood } from "./handlers/food";
+import { createFood, searchFood } from "./handlers/food";
 
 const router = Router();
 
@@ -32,5 +32,6 @@ router.post(
 );
 
 router.post("/user/:userId/food", createFood);
+router.get("/foods/search", searchFood);
 
 export default router;

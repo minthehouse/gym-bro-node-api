@@ -46,3 +46,52 @@ export const createFood = async (req, res, next) => {
     next(e);
   }
 };
+
+export const searchFood = async (req, res, next) => {
+  try {
+    const searchParam = req.query.search_param;
+    const servingWeight = req.query.serving_weight;
+
+    const apiUrl = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${searchParam}&api_key=${process.env.FOOD_API_KEY}&pageSize=10`;
+
+    const response = await fetch(apiUrl);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const responseData = await response.json();
+
+    const processedResponse = processApiResponse(responseData, servingWeight);
+
+    res.json(processedResponse);
+  } catch (e) {}
+};
+
+function processApiResponse(response, servingWeight) {
+  const simplifiedFoods = response.foods.map((food) => ({
+    name: food.description,
+    calories: extractNutrientValue(food, "Energy", servingWeight),
+    protein: extractNutrientValue(food, "Protein", servingWeight),
+    fat: extractNutrientValue(food, "Total lipid (fat)", servingWeight),
+    carbohydrates: extractNutrientValue(
+      food,
+      "Carbohydrate, by difference",
+      servingWeight
+    ),
+  }));
+
+  return simplifiedFoods;
+}
+
+function extractNutrientValue(food, nutrientName, servingWeight) {
+  const nutrients = food.foodNutrients || [];
+  const nutrient = nutrients.find(
+    (nutrient) => nutrient.nutrientName === nutrientName
+  );
+  if (nutrient && servingWeight) {
+    // Adjust the value based on the servingWeight
+    return (nutrient.value * servingWeight) / food.servingSize;
+  }
+  return nutrient ? nutrient.value : 0;
+}
