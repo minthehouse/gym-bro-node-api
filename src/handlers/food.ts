@@ -1,4 +1,5 @@
 import prisma from "../db";
+import { NutrientNumber } from "../enums/food.enum";
 
 interface FoodCreateRequestBody {
   name: string;
@@ -52,7 +53,7 @@ export const searchFood = async (req, res, next) => {
     const searchParam = req.query.search_param;
     const servingWeight = req.query.serving_weight;
 
-    const apiUrl = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${searchParam}&api_key=${process.env.FOOD_API_KEY}&pageSize=10`;
+    const apiUrl = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${searchParam}&api_key=${process.env.FOOD_API_KEY}&pageSize=5`;
 
     const response = await fetch(apiUrl);
 
@@ -69,26 +70,37 @@ export const searchFood = async (req, res, next) => {
 };
 
 function processApiResponse(response, servingWeight) {
-  const simplifiedFoods = response.foods.map((food) => ({
-    name: food.description,
-    calories: extractNutrientValue(food, "Energy", servingWeight),
-    protein: extractNutrientValue(food, "Protein", servingWeight),
-    fat: extractNutrientValue(food, "Total lipid (fat)", servingWeight),
-    carbohydrates: extractNutrientValue(
-      food,
-      "Carbohydrate, by difference",
-      servingWeight
-    ),
-  }));
+  const simplifiedFoods = response.foods.map((food) => {
+    return {
+      name: food.description,
+      calories: extractNutrientValue(
+        food,
+        NutrientNumber.CALORIES,
+        servingWeight
+      ),
+      protein: extractNutrientValue(
+        food,
+        NutrientNumber.PROTEIN,
+        servingWeight
+      ),
+      fat: extractNutrientValue(food, NutrientNumber.FAT, servingWeight),
+      carbohydrates: extractNutrientValue(
+        food,
+        NutrientNumber.CARB,
+        servingWeight
+      ),
+    };
+  });
 
   return simplifiedFoods;
 }
 
-function extractNutrientValue(food, nutrientName, servingWeight) {
+function extractNutrientValue(food, nutrientNumber: string, servingWeight) {
   const nutrients = food.foodNutrients || [];
-  const nutrient = nutrients.find(
-    (nutrient) => nutrient.nutrientName === nutrientName
-  );
+
+  const nutrient = nutrients.find((nutrient) => {
+    return nutrient.nutrientNumber === nutrientNumber;
+  });
   if (nutrient && servingWeight) {
     // Adjust the value based on the servingWeight
     return (nutrient.value * servingWeight) / food.servingSize;
